@@ -39,6 +39,11 @@ namespace ScpControl.Bluetooth
                     var packet = new L2CapDataPacket(buffer);
 
                     var connection = GetConnection(packet);
+                    if (LmpMajor >= 6 && connection == null || LmpMajor < 6 && !AnyConnections())
+                    {
+                        Log.Info("Waiting 250ms for connection...");
+                        Thread.Sleep(250);
+                    }
 
                     if (connection == null && !_connectionPendingEvent.WaitOne(TimeSpan.FromSeconds(2)))
                     {
@@ -627,6 +632,7 @@ namespace ScpControl.Bluetooth
                                         var hciMajor = buffer[6];
                                         var lmpMajor = buffer[9];
 
+                                        LmpMajor = lmpMajor;
                                         HciVersion = string.Format("{0}.{1:X4}", buffer[6], buffer[8] << 8 | buffer[7]);
                                         LmpVersion = string.Format("{0}.{1:X4}", buffer[9],
                                             buffer[13] << 8 | buffer[12]);

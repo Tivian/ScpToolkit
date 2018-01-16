@@ -89,6 +89,7 @@ namespace ScpControl.Bluetooth
         private CancellationTokenSource _l2CapCancellationTokenSource = new CancellationTokenSource();
         private string _hciVersion = string.Empty;
         private byte _l2CapDataIdentifier = 0x01;
+        private byte _lmpMajor = 0x00;
         private string _lmpVersion = string.Empty;
         private DsState _state = DsState.Disconnected;
         private readonly ConnectionList _connected = new ConnectionList();
@@ -119,6 +120,12 @@ namespace ScpControl.Bluetooth
         {
             get { return _hciVersion; }
             set { _hciVersion = value; }
+        }
+
+        public byte LmpMajor
+        {
+            get { return _lmpMajor; }
+            set { _lmpMajor = value; }
         }
 
         public string LmpVersion
@@ -238,6 +245,11 @@ namespace ScpControl.Bluetooth
             {
                 return (!_connected.Any() | !_connected.ContainsKey(packet.Handle)) ? null : _connected[packet.Handle];
             }
+        }
+
+        private bool AnyConnections()
+        {
+            return _connected.Any();
         }
 
         private void Remove(byte lsb, byte msb)
